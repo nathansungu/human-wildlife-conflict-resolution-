@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  name       String?
+  phone      String?  @unique  
+  roleName    String  @default("user")
+  password   String?
+  role       Roles    @relation(fields: [roleName], references: [name])
+  subscribed Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+model Roles {
+  id        String   @id @default(uuid())
+  name      String   @unique  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+model AnimalLogs {
+  id       String  @id @default(uuid())
+  animalId String
+  cameraId String 
+  confidence Float
+  isVerified Boolean @default(true) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  camera Cameras @relation(fields: [cameraId], references: [id])
+  animal    Animals  @relation(fields: [animalId], references: [id])
+}
+
+model Alerts {
+  id        String   @id @default(uuid())
+  animalId  String
+  cameraId  String
+  message   String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  animal    Animals  @relation(fields: [animalId], references: [id])
+  camera    Cameras  @relation(fields: [cameraId], references: [id])
+}
+
+model DailyReports {
+  id        String   @id @default(uuid())
+  date      DateTime
+  speciesId String
+  @@unique([date, speciesId, cameraId])
+  count     Int
+  cameraId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  animal    Animals  @relation(fields: [speciesId], references: [id])
+}
+
+model Animals {
+  id                 String       @id @default(uuid())
+  name               String       @unique
+  conservationStatus String       @default("endangered")
+  alertPriority      String       @default("high")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  logs               AnimalLogs[]
+  alerts             Alerts[]
+  reports            DailyReports[]
+}
+
+model Cameras {
+  id        String       @id @default(uuid())
+  name      String
+  location  String
+  streamUrl String
+  isActive  Boolean       @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  logs      AnimalLogs[]
+  alerts    Alerts[]
+}
