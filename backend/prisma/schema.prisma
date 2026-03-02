@@ -7,6 +7,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ConservationStatus {
+  endangered
+  vulnerable
+  protected
+}
+
+enum AlertPriority {
+  low
+  medium
+  high
+}
+
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -66,12 +78,12 @@ model DailyReports {
 }
 
 model Animals {
-  id                 String       @id @default(uuid())
-  name               String       @unique
-  conservationStatus String       @default("endangered")
-  alertPriority      String       @default("high")
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  id                 String              @id @default(uuid())
+  name               String              @unique
+  conservationStatus ConservationStatus  @default(endangered)
+  alertPriority      AlertPriority       @default(high)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   logs               AnimalLogs[]
   alerts             Alerts[]
