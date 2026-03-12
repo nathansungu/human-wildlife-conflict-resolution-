@@ -4,12 +4,14 @@ import {
   allDetectionsService,
   verifyDetectionService,
   recordDetectionService,
+  getDailyReportService,
   sendNotificationService
 } from "../services/detection.Service";
 import {
   getDetectionValidation,
   recordDetectionValidation,
   verifyDetectionValidation,
+  getDailyReportValidation
 } from "../zod.Validation/detection.Validation";
 import axios from "axios";
 export const getDetectionsController = asyncHandler(
@@ -21,6 +23,14 @@ export const getDetectionsController = asyncHandler(
     );
     res.status(200).json(detections);
   },
+);
+
+export const getDailyReportController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { date } = await getDailyReportValidation.parseAsync(req.body);
+    const report = await getDailyReportService(date );
+    res.status(200).json(report);
+  }
 );
 
 export const recordDetectionController = asyncHandler(

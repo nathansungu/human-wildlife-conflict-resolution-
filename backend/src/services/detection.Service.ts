@@ -1,5 +1,9 @@
+import { count } from "node:console";
 import prismaInstance from "../prismaInstance";
-import { nodemailerTransporter , celcomAfricaSms} from "../utility/nodemailer_afrcastalking";
+import {
+  nodemailerTransporter,
+  celcomAfricaSms,
+} from "../utility/nodemailer_afrcastalking";
 import axios from "axios";
 
 export const allDetectionsService = async (
@@ -29,7 +33,7 @@ export const recordDetectionService = async (
     where: { name: name },
     select: { id: true },
   });
-  if(!getAnimalId) {
+  if (!getAnimalId) {
     return Promise.reject(new Error("animal not found"));
   }
 
@@ -40,6 +44,53 @@ export const recordDetectionService = async (
     return Promise.reject(new Error("failed to add record"));
   }
   return newRecord;
+};
+
+export const recordAnimalLog = async (
+  name: string,
+  date: Date,
+  cameraId: string,
+  number: number,
+) => {
+  const record = await prismaInstance.dailyReports.findFirst({
+    where: { speciesName: name, date: date, cameraId: cameraId },
+  });
+
+  if (record) {
+    await prismaInstance.dailyReports.update({
+      where: { id: record.id },
+      data: { count: record.count + number },
+    });
+  }
+
+  const newRecord = await prismaInstance.dailyReports.create({
+    data: { cameraId: cameraId, speciesName: name, date: date, count: number },
+  });
+  if (!newRecord) {
+    return Promise.reject(new Error("failed to add record"));
+  }
+};
+
+// record alerts
+const recordAlertService = async (
+  animalName: string,
+  cameraId: string,
+  message: string,
+) => {
+  const newRecord = await prismaInstance.alerts.create({
+    data: { animalName, cameraId, message },
+  });
+  if (!newRecord) {
+    return Promise.reject(new Error("failed to add record"));
+  }
+  return newRecord;
+};
+//get all records for a specific day
+export const getDailyReportService = async (date?: Date) => {
+  const records = await prismaInstance.dailyReports.findMany({
+    where: { date: date && date },
+  });
+  return records;
 };
 
 export const verifyDetectionService = async (
@@ -86,8 +137,8 @@ Confidence: ${(confidence * 100).toFixed(2)}%
 Detected at: ${new Date().toLocaleString()}
 `;
   for (const user of users) {
+   
     console.log("Sending notification to user:", user.email);
-    //send email
     if (user.email) {
       console.log(
         `Sending email to ${user.email} for ${animalName} detection...`,
@@ -98,26 +149,30 @@ Detected at: ${new Date().toLocaleString()}
         subject: `Wildlife Alert: ${animal?.name} detected`,
         text: message,
       });
+      
+      
     }
 
-    // Send SMS
+    // // Send SMS
+    // if (user.phone) {
+    //   //send via phone gate way
+    //   await axios.post(
+    //     "http://10.10.255.17:8080/send-sms",
+    //     {
+    //       phone: user.phone,
+    //       message: message,
+    //     },
+    //   );
+    // }
+
+    // via calcom Africa
     if (user.phone) {
-      //send via phone gate way
-      await axios.post(
-        "http://10.10.255.17:8080/send-sms",
-        {
-          phone: user.phone,
-          message: message,
-        },
-      );
+     await celcomAfricaSms(message, user.phone);
     }
-
-    // via calcom Africa 
-    if (user.phone) {
-      await celcomAfricaSms(message, user.phone);
-    }
-
+    
+    await recordAlertService(animalName, cameraId, message);
   }
+  
 };
 
 export const automatedNotificationService = async () => {
@@ -125,7 +180,7 @@ export const automatedNotificationService = async () => {
     const response = await axios.get("http://localhost:5000/detect-animals");
 
     if (response.status !== 200) {
-      console.warn("Detection API returned non-200:", response.status);
+      console.warn("Detection API returned 200:", response.status);
       return;
     }
 
@@ -138,13 +193,22 @@ export const automatedNotificationService = async () => {
             await sendNotificationService(
               detection.class_name,
               cameraId,
-              detection.confidence
+              detection.confidence,
             );
 
             await recordDetectionService(
               detection.class_name,
               cameraId,
-              detection.confidence
+              detection.confidence,
+            );
+            // modifydate to only include the day not time
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            await recordAnimalLog(
+              detection.class_name,
+              today,
+              cameraId,
+              detection.number,
             );
           } catch (innerError) {
             console.error("Failed processing detection:", innerError);

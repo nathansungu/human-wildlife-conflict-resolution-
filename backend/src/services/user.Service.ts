@@ -1,3 +1,4 @@
+import { tr } from "zod/v4/locales";
 import prismaInstance from "../prismaInstance";
 import bcrypt from "bcrypt";
 
@@ -60,4 +61,31 @@ export const updateUserService = async (
   });
   return updatedUser;
 };
+//to do:
+  //finish login
+  //finish refreshtoken
+
+export const loginUserService = async(password:string, identifier:string )=>{
+  const user = await prismaInstance.user.findFirst({
+    where:{OR: [{email:identifier}, {phone:identifier}]},    
+  })
+  if(!user){
+    return Promise.reject(new Error("invalid user"))
+  }
+
+  if(!user.password){
+    return Promise.reject(new Error("unauthorised action"))
+  }
+  const isValidPassword = bcrypt.compare(user.password, password)
+
+  if(!isValidPassword){
+    return Promise.reject(new Error("invalid user"))
+  }
+
+
+}
+
+export const refreshTokenService = async(refreshToken:string)=>{
+
+}
 
