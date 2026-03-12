@@ -53,28 +53,28 @@ model AnimalLogs {
 
 model Alerts {
   id        String   @id @default(uuid())
-  animalId  String
+  animalName String
   cameraId  String
   message   String
-  status    String   @default("PENDING")
+  status    String   @default("SENT")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  animal    Animals  @relation(fields: [animalId], references: [id])
+  animal    Animals  @relation(fields: [animalName], references: [name])
   camera    Cameras  @relation(fields: [cameraId], references: [id])
 }
 
 model DailyReports {
   id        String   @id @default(uuid())
   date      DateTime
-  speciesId String
-  @@unique([date, speciesId, cameraId])
+  speciesName String
+  @@unique([date, speciesName, cameraId])
   count     Int
   cameraId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  animal    Animals  @relation(fields: [speciesId], references: [id])
+  animal    Animals  @relation(fields: [speciesName], references: [name])
 }
 
 model Animals {

@@ -15,3 +15,7 @@ export const recordDetectionValidation = z.object({
     spiciesId: z.string(),
     confidence: z.float32()
 })
+
+export const getDailyReportValidation = z.object({
+    date: z.date().optional()
+})
