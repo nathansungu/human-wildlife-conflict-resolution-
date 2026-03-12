@@ -91,6 +91,7 @@ class AnimalTracker:
                         "frame_count": 1,
                         "last_seen": 0,
                         "bbox": (x1, y1, x2, y2),
+                        "number": 1
                         
                     }
                     
@@ -131,3 +132,7 @@ class AnimalTracker:
         self.animal_tracking = {}
         self.reported_animals = set()
         print("Tracking reset")
+
+    def restart(self):
+        self.release()
+        self._get_video_capture()

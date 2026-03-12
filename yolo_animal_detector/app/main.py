@@ -16,13 +16,12 @@ def load_cameras():
     cameras = response.json()
 
     if not cameras:
-        print("No active cameras found.")
         return
 
     for cam in cameras:
         camera_id = cam["id"]
         stream_url = cam["streamUrl"]
-        
+                
         if camera_id not in trackers:
             trackers[camera_id] = AnimalTracker(
                 model_path=MODEL_PATH,
@@ -58,3 +57,10 @@ async def reset_tracking():
         tracker.reset()
         tracker.latest_detections.clear()
     return {"status": "reset complete"}
+
+@app.post("/restart")
+async def restart_tracking():
+    for tracker in trackers.values(): 
+        tracker.restart()
+        tracker.latest_detections.clear()
+    return {"status": "restart complete"}
