@@ -1,11 +1,21 @@
-import { addUserController, updateUserController, getUsersController } from "../controllers/users.Controller";
+import {
+  addUserController,
+  updateUserController,
+  getUsersController,
+  subscribeController,
+} from "../controllers/users.Controller";
 
-import Route from "express"
+import Route from "express";
+import {
+  checkAdmin,
+  checkAuthentication,
+} from "../middlewares/checkAuthentication.Middleware";
 
-const users = Route()
+const users = Route();
 
-users.post("/",addUserController)
-users.patch("/", updateUserController)
-users.get("/", getUsersController)
+users.post("/register", checkAuthentication, checkAdmin, addUserController);
+users.post("/subscribe", subscribeController);
+users.patch("/", checkAuthentication, checkAdmin, updateUserController);
+users.get("/", checkAuthentication, checkAdmin, getUsersController);
 
-export default users
+export default users;
