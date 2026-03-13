@@ -9,10 +9,6 @@ export const nodemailerTransporter = nodemailer.createTransport({
   },
 });
 
-export const africasTalkingClient = africasTalking({
-  apiKey: process.env.AFRICAS_TALKING_API_KEY!,
-  username: process.env.AFRICAS_TALKING_USERNAME!,
-});
 
 export const celcomAfricaSms = async (message:string, phone:string) => {
   try {

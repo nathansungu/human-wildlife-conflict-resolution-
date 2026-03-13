@@ -77,6 +77,9 @@ export const updateUserService = async (
       subscribed: subscribed && subscribed,
     },
   });
+  if (!updatedUser) {
+    return Promise.reject(new Error("failed to update user"));
+  }
   return updatedUser;
 };
 
