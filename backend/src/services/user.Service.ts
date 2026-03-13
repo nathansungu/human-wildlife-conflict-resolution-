@@ -6,7 +6,6 @@ export const subscribeService = async (
   phone: string,
   name: string,
   email: string,
-  password?: string,
 ) => {
   const newUser = await prismaInstance.user.create({
     data: {
@@ -18,7 +17,7 @@ export const subscribeService = async (
     },
   });
   if (!newUser) {
-    return Promise.reject(new Error("failed to add user"));
+    return Promise.reject(new Error("failed to subscribe"));
   }
   return newUser;
 };
@@ -27,7 +26,7 @@ export const addUserService = async (
   phone: string,
   name: string,
   email: string,
-  password?: string,
+  password: string,
   roleName?: string,
 ) => {
   const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;

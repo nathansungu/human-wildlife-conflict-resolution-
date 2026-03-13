@@ -1,4 +1,3 @@
-import { count } from "node:console";
 import prismaInstance from "../prismaInstance";
 import {
   nodemailerTransporter,
@@ -28,7 +27,6 @@ export const recordDetectionService = async (
   cameraId: string,
   confidence: number,
 ) => {
-  console.log("Recording detection:", { name, cameraId, confidence });
   const getAnimalId = await prismaInstance.animals.findFirst({
     where: { name: name },
     select: { id: true },
@@ -220,3 +218,5 @@ export const automatedNotificationService = async () => {
     console.error("Detection API failed:", error.message);
   }
 };
+
+

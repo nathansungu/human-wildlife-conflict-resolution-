@@ -9,3 +9,4 @@ export const createRoleService = async (name: string) => {
   }
   return newRole;
 }
+
