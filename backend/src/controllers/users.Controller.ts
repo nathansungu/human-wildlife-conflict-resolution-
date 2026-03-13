@@ -1,16 +1,24 @@
-import { addUserService, updateUserService, getUSerService } from "../services/user.Service";
+import { addUserService, updateUserService, getUSerService, subscribeService } from "../services/user.Service";
 import { Request, Response } from "express";
 import {
   addUserValidation,
   updateUserValidation,
-  getUserValidation
+  getUserValidation,
+  subscribeUserValidation
 } from "../zod.Validation/users.Validation";
 
 export const addUserController = async (req: Request, res: Response) => {
-  const { phone, name, email } = await addUserValidation.parseAsync(req.body);
-  const newUser = await addUserService(phone, name, email, );
+  const { phone, name, email, password, roleName } = await addUserValidation.parseAsync(req.body);
+  const newUser = await addUserService(phone, name, email, password, roleName);
   res.status(201).json(newUser);
 };
+
+export const subscribeController = async (req: Request, res: Response) => {
+  const { phone, name, email } = await subscribeUserValidation.parseAsync(req.body);
+  const newUser = await subscribeService(phone, name, email);
+  res.status(201).json(newUser);
+};
+
 
 export const updateUserController = async (req: Request, res: Response) => {
   const { id } = req.params as { id: string };
