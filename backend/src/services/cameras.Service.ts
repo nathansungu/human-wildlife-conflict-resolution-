@@ -25,5 +25,8 @@ export const changeCameraStatus =async(id:string, status:boolean)=>{
     const camera = await prismaInstance.cameras.update({
       where:{id}, data:{isActive:status}
     })
+    if(!camera){
+      throw new Error("camera not found")
+    }
     return camera
 }

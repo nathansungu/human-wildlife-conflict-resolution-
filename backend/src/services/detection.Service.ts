@@ -39,7 +39,7 @@ export const recordDetectionService = async (
     data: { animalId: getAnimalId?.id, cameraId, confidence },
   });
   if (!newRecord) {
-    return Promise.reject(new Error("failed to add record"));
+    return Promise.reject(new Error("failed to add records"));
   }
   return newRecord;
 };
@@ -215,7 +215,7 @@ export const automatedNotificationService = async () => {
       }
     }
   } catch (error: any) {
-    console.error("Detection API failed:", error.message);
+    console.log("Failed to fetch records ");
   }
 };
 

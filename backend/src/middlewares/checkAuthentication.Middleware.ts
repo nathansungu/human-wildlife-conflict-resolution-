@@ -1,7 +1,8 @@
 // check if user is authenticated
 
 import { Request, Response, NextFunction } from "express";
-import { verify, JwtPayload } from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
+import { UserPayload } from "../../@types/express";
 
 export const checkAuthentication = (
   req: Request,
@@ -12,10 +13,13 @@ export const checkAuthentication = (
   if (!authHeader) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+
   const token = authHeader.split(" ")[1];
+
   try {
-    const decoded = verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = verify(token, process.env.JWT_SECRET as string) as UserPayload;
     req.user = decoded;
+    req.token = token;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });
