@@ -1,22 +1,19 @@
-import { tr } from "zod/v4/locales";
 import prismaInstance from "../prismaInstance";
 import bcrypt from "bcrypt";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 
-export const addUserService = async (
+export const subscribeService = async (
   phone: string,
   name: string,
   email: string,
   password?: string,
 ) => {
-  const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
   const newUser = await prismaInstance.user.create({
     data: {
       phone,
       roleName: "user",
       name,
       email,
-      password: hashedPassword,
       subscribed: true,
     },
   });
@@ -25,6 +22,29 @@ export const addUserService = async (
   }
   return newUser;
 };
+
+export const addUserService = async (
+  phone: string,
+  name: string,
+  email: string,
+  password?: string,
+  roleName?: string,
+) => {
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+  const newUser = await prismaInstance.user.create({  
+    data: {
+      phone,
+      roleName: roleName || "user",
+      name,
+      email,
+      password: hashedPassword,
+    },
+  });
+  if (!newUser) {
+    return Promise.reject(new Error("failed to add user"));
+  }
+  return newUser;
+}
 
 export const getUSerService = async (id?: string) => {
   const users = await prismaInstance.user.findMany({
@@ -83,12 +103,12 @@ export const loginUserService = async (
 
   // return token
   const accesToken = sign(
-    { userId: user.id, name: user.name },
+    { userId: user.id, name: user.name, roleName: user.roleName },
     process.env.JWT_TOKEN_SECRET as string,
-    { expiresIn: "1m" },
+    { expiresIn: "3m" },
   );
   const refreshToken = sign(
-    { userId: user.id, name: user.name },
+    { userId: user.id, name: user.name, roleName: user.roleName },
     process.env.REFRESH_TOKEN_SECRET as string,
     { expiresIn: "1d" },
   );
@@ -100,14 +120,14 @@ export const refreshTokenService = async (refreshToken: string) => {
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET as string,
   ) as JwtPayload;
-  const { userId, name } = decoded;
+  const { userId, name, roleName } = decoded;
   if (!userId) {
     throw new Error("invalid refresh token");
   }
   const newAccessToken = sign(
-    { userId, name },
+    { userId, name, roleName },
     process.env.JWT_TOKEN_SECRET as string,
-    { expiresIn: "1m" },
+    { expiresIn: "3m" },
   );
   return { accessToken: newAccessToken };
 };
