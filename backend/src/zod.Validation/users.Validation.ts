@@ -10,7 +10,7 @@ export const addUserValidation = z.object({
 export const subscribeUserValidation = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z.string().length(9, "Phone number must be 9 digits"),
 });
 
 // update user
@@ -32,3 +32,9 @@ export const updateUserValidation = z.object({
 export const getUserValidation = z.object({
   id: z.string().optional(),
 });
+
+export const loginValidation = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
