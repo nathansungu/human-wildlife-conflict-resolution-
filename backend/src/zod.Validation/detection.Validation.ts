@@ -1,5 +1,4 @@
 import z from "zod"
-
 export const getDetectionValidation = z.object({
     cameraId: z.string().optional(),
     spiciesId: z.string().optional()

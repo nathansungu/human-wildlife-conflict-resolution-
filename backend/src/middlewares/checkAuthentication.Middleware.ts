@@ -9,15 +9,16 @@ export const checkAuthentication = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
+  const token = req.cookies.accessToken;
+  if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = verify(token, process.env.JWT_SECRET as string) as UserPayload;
+    const decoded = verify(
+      token,
+      process.env.JWT_ACCESSTOKEN_SECRET as string,
+    ) as UserPayload;
     req.user = decoded;
     req.token = token;
     next();
@@ -26,11 +27,7 @@ export const checkAuthentication = (
   }
 };
 
-export const checkAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (req.user?.roleName !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }

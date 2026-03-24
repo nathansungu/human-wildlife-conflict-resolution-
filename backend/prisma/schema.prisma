@@ -44,6 +44,7 @@ model AnimalLogs {
   cameraId String 
   confidence Float
   isVerified Boolean @default(true) 
+  status String @default("PENDING")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
