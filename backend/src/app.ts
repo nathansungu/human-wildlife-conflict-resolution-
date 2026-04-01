@@ -4,6 +4,7 @@ import cookieparser from "cookie-parser";
 import routes from "./routes";
 import { automatedNotificationService } from "./services/detection.Service";
 import { errorHandler } from "./middlewares/errorHandler.Middleware";
+
 const app = express();
 app.use(cors({
   origin: "http://localhost:5173",
@@ -12,6 +13,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieparser());
 app.use("/api", routes);
+
 
 setInterval(() => {
   automatedNotificationService();

@@ -73,6 +73,15 @@ export const getUSerService = async (id?: string) => {
     where: {
       id: id && id,
     },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      roleName: true,
+      subscribed: true,
+      createdAt: true,
+    },
   });
   if (!users) {
     return Promise.reject(new Error("failed to load users"));
@@ -138,9 +147,7 @@ export const loginUserService = async (
     process.env.JWT_REFRESHTOKEN_SECRET as string,
     { expiresIn: "1d" },
   );
-  //pick details to send to client
-  const {name, email, id, roleName} = user;
-  return { accessToken, refreshToken, user: { name, email, id, roleName } };
+  return { accessToken, refreshToken };
 };
 
 export const refreshTokenService = async (refreshToken: string) => {
@@ -152,11 +159,10 @@ export const refreshTokenService = async (refreshToken: string) => {
     where: { id: decoded.id },
   });
   if (!user) {
-    console.log("User not found for refresh token:", decoded.id);
     throw new Error("invalid refresh token");
   }
-  const { userId} = decoded;
-  if (!userId) {
+  const { id } = decoded;
+  if (!id) {
     throw new Error("invalid refresh token");
   }
   const accessToken = sign(
@@ -166,7 +172,6 @@ export const refreshTokenService = async (refreshToken: string) => {
   );
   return { accessToken: accessToken };
 };
-
 
 //get logged in user 
 export const loggedInUSerService = async(id:string)=>{
