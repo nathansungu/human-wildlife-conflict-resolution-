@@ -1,7 +1,8 @@
-import z from "zod"
+import z, { date } from "zod"
 export const getDetectionValidation = z.object({
     cameraId: z.string().optional(),
-    spiciesId: z.string().optional()
+    spiciesId: z.string().optional(),
+    date: z.date().optional()
 })
 
 export const verifyDetectionValidation = z.object({

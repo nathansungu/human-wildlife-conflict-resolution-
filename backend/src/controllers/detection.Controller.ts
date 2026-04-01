@@ -5,7 +5,8 @@ import {
   verifyDetectionService,
   recordDetectionService,
   getDailyReportService,
-  sendNotificationService
+  sendNotificationService,
+  getReportsService
 } from "../services/detection.Service";
 import {
   getDetectionValidation,
@@ -16,10 +17,11 @@ import {
 import axios from "axios";
 export const getDetectionsController = asyncHandler(
   async (req: Request, res: Response) => {
-    const data = await getDetectionValidation.parseAsync(req.body);
+    const data = await getDetectionValidation.parseAsync(req.params);
     const detections = await allDetectionsService(
       data.spiciesId,
       data.cameraId,
+      data.date,
     );
     res.status(200).json(detections);
   },
@@ -27,8 +29,8 @@ export const getDetectionsController = asyncHandler(
 
 export const getDailyReportController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { date } = await getDailyReportValidation.parseAsync(req.body);
-    const report = await getDailyReportService(date );
+    // const { date } = await getDailyReportValidation.parseAsync(req.body);
+    const report = await getDailyReportService();
     res.status(200).json(report);
   }
 );
@@ -79,4 +81,11 @@ export const sendNotificationController  = asyncHandler(
     }
     res.status(200).json({ message: "Notifications sent successfully" });
   },
+);
+
+export const getAllReportsController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const reports = await getReportsService();
+    res.status(200).json(reports);
+  }
 );
