@@ -82,8 +82,10 @@ class AnimalTracker:
                     continue
 
                 class_name = self.model.names.get(cls_id, str(cls_id))
-
+                
                 if track_id not in self.animal_tracking:
+                    # get the number of animals of the same class currently being tracked
+                    number = sum(1 for data in self.animal_tracking.values() if data["class_id"] == cls_id)
                     self.animal_tracking[track_id] = {
                         "confidence": conf,
                         "class_id": cls_id,
@@ -91,7 +93,7 @@ class AnimalTracker:
                         "frame_count": 1,
                         "last_seen": 0,
                         "bbox": (x1, y1, x2, y2),
-                        "number": 1
+                        "number": number + 1
                         
                     }
                     
@@ -117,6 +119,7 @@ class AnimalTracker:
                     "confidence": round(data["confidence"], 3),
                     "frames_detected": data["frame_count"],
                     "bbox": data["bbox"],
+                    "number": data["number"]
                 }
 
                 self.latest_detections.append(result)
