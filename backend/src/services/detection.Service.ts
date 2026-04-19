@@ -160,7 +160,10 @@ Detected at: ${new Date().toLocaleString()}
         );
       }
       if (user.phone) {
-        tasks.push(celcomAfricaSms(message, user.phone));
+        console.log(`Sending SMS to ${user.phone}: ${message}`);
+        //send via getway on http://192.168.0.100:8080/send-sms
+        // axios.post("http://192.168.43.1:8080/send-sms", {"phone":user.phone, "message": message})
+        //tasks.push(celcomAfricaSms(message, user.phone));
       }
       return Promise.allSettled(tasks);
     }),
@@ -287,3 +290,11 @@ export const getReportsService = async () => {
     highPriorityAlerts,
   };
 };
+
+export const restartDetectionService = async () => {
+  const response = await axios.post("http://localhost:5000/restart");
+  if (response.status !== 200) {
+    return Promise.reject(new Error("failed to restart detection service"));
+  }
+  return response.data;
+}
