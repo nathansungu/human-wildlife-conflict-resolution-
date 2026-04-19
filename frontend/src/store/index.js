@@ -9,6 +9,7 @@ export const useAuthStore = create(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      loginattempts: 0,
 
       login: (userData) => set({ user: userData, isAuthenticated: true }),
 
@@ -25,6 +26,7 @@ export const useAuthStore = create(
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
+      setLoginAttempts: () => set({ loginAttempts: loginAttempts + 1 }),
     }),
 
     {

@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Subscribe from './pages/Subscribe';
 import Register from './pages/Register';
 import PrivateRoute from './components/PrivateRoute';
+import LandingPage from './pages/landing';
 
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -55,6 +56,7 @@ function App() {
       />
       
       <Routes>
+        <Route path="/landing_page" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/subscribe" element={<Subscribe />} />
         <Route path="/register" element={<Register />} />

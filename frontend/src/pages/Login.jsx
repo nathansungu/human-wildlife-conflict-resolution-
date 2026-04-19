@@ -23,7 +23,7 @@ import toast from 'react-hot-toast';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, setLoginAttempts } = useAuthStore();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -48,6 +48,7 @@ export default function Login() {
     // Validate form
     try {
       loginValidation.parse(formData);
+      setLoginAttempts();
     } catch (error) {
       const fieldErrors = {};
       error.errors.forEach(err => {
