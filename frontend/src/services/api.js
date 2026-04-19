@@ -65,6 +65,7 @@ export const detectionService = {
   record: (data) => api.post("/detections", data),
   verify: (data) => api.put("/detections", data),
   getAllReports: () => api.get("/detections/reports"),
+  restartDetectionService: () => api.post("/detections/restart"),
 };
 
 //dashboardService
