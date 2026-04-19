@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllReportsController, getDailyReportController, getDetectionsController, recordDetectionController, verifyDetectionServiceController } from "../controllers/detection.Controller";
+import { getAllReportsController, getDailyReportController, getDetectionsController, recordDetectionController, restartDetectionController, verifyDetectionServiceController } from "../controllers/detection.Controller";
 import { checkAdmin, checkAuthentication } from "../middlewares/checkAuthentication.Middleware";
 import  {getDashboardStatsController} from "../controllers/animal.controller"
 import { de } from "zod/v4/locales";
@@ -11,5 +11,6 @@ detectionRoute.get("/dashboard-stats",checkAuthentication, getDashboardStatsCont
 detectionRoute.get("/reports",checkAuthentication, getAllReportsController)
 detectionRoute.post("/",checkAuthentication, checkAdmin, recordDetectionController)
 detectionRoute.put("/",checkAuthentication,checkAdmin, verifyDetectionServiceController)
+detectionRoute.post("/restart",checkAuthentication,checkAdmin, restartDetectionController)
 
 export default detectionRoute;

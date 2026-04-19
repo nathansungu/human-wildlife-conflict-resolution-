@@ -6,7 +6,8 @@ import {
   recordDetectionService,
   getDailyReportService,
   sendNotificationService,
-  getReportsService
+  getReportsService,
+  restartDetectionService
 } from "../services/detection.Service";
 import {
   getDetectionValidation,
@@ -87,5 +88,12 @@ export const getAllReportsController = asyncHandler(
   async (req: Request, res: Response) => {
     const reports = await getReportsService();
     res.status(200).json(reports);
+  }
+);
+
+export const restartDetectionController = asyncHandler(
+  async (req: Request, res: Response) => {    
+    await restartDetectionService();
+    res.status(200).json({ message: "Detection service restarted successfully" });
   }
 );
