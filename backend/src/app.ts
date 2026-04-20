@@ -7,7 +7,8 @@ import { errorHandler } from "./middlewares/errorHandler.Middleware";
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",
+
+  origin: ["http://localhost:5173", "https://human-wildlife-conflict-resolution.onrender.com"],
   credentials: true,
 }));
 app.use(express.json());
