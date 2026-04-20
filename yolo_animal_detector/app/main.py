@@ -4,11 +4,16 @@ import requests
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.predict import AnimalTracker
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 trackers = {}
 
 MODEL_PATH = "./models/best.pt"
-NODE_URL = "http://localhost:3000/api/cameras"
+# NODE_URL = "http://localhost:3000/api/cameras"
+# get url from env variable if set, otherwise use default
+NODE_URL = os.getenv("NODE_URL")
 
 RETRY_ATTEMPTS = 5
 RETRY_DELAY = 3  
