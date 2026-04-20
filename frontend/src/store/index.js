@@ -26,7 +26,7 @@ export const useAuthStore = create(
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
-      setLoginAttempts: () => set({ loginAttempts: loginAttempts + 1 }),
+      setLoginAttempts: () => set((state) => ({ loginAttempts: state.loginAttempts + 1 })),
     }),
 
     {
