@@ -2,6 +2,7 @@
 import  { Request, Response, NextFunction } from "express";
 import { Prisma } from "../../generated/prisma/client";
 import z, { ZodError } from "zod";
+import { JsonWebTokenError } from "jsonwebtoken";
 export const errorHandler = (
   err: Error,
   _req: Request,
@@ -66,6 +67,11 @@ export const errorHandler = (
     return;
   } else if(err.message === "failed to create role") {
     res.status(500).json({ message: "Failed to create role." });
+    return;
+  }
+  else if(err instanceof  JsonWebTokenError) {
+    console.log("JWT error:", err);
+    res.status(401).json({ message: "Invalid token." });
     return;
   }
   else {
