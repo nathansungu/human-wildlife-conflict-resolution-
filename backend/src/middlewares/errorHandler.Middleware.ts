@@ -70,12 +70,11 @@ export const errorHandler = (
     return;
   }
   else if(err instanceof  JsonWebTokenError) {
-    console.log("JWT error:", err);
     res.status(401).json({ message: "Invalid token." });
     return;
   }
   else {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Internal server error." });
     return;
   }
