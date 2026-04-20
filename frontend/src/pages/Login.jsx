@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
@@ -51,6 +51,7 @@ export default function Login() {
       loginValidation.parse(formData);
       setLoginAttempts();
     } catch (error) {
+      console.log("Validation error:", error);
       if (error instanceof ZodError) {
         error.issues.forEach((err) => {
           fieldErrors[err.path[0]] = err.message;
