@@ -3,6 +3,7 @@ import  { Request, Response, NextFunction } from "express";
 import { Prisma } from "../../generated/prisma/client";
 import z, { ZodError } from "zod";
 import { JsonWebTokenError } from "jsonwebtoken";
+import { error } from "node:console";
 export const errorHandler = (
   err: Error,
   _req: Request,
@@ -17,7 +18,7 @@ export const errorHandler = (
       res.status(404).json({ message: "Resource not found." });
       return;
     } else {
-      res.status(500).json({ message: "Internal server error." });
+      res.status(500).json({ message: "Internal server error.", error: err.message });
       return;
     }
   } else if (err instanceof ZodError) {
