@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const addUserValidation = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z.string().min(9, "Phone number must be at least 9 digits"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   roleName: z.enum(["admin", "user"]).optional(),
 });
