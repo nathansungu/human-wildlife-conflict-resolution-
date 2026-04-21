@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { subscribeUserValidation } from "../validations/index";
+import { addUserValidation } from "../validations/index";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {authService} from "../services/api"
+import {userService} from "../services/api"
 const pageInfo = {
   Subscribe: {
     title: "Register",
@@ -47,7 +47,7 @@ export default function Register() {
     e.preventDefault();
     setErrors({});
     try {
-      const validatedData = await subscribeUserValidation.parseAsync(formData);
+      await addUserValidation.parseAsync(formData);
     } catch (error) {
       const fieldErrors = {};
       error.errors.forEach((err) => {
@@ -59,7 +59,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await authService.subscribe(formData);
+      await userService.register(formData);
       toast.success("Registration successful!");
       navigate("/dashboard");
     } catch (error) {
@@ -178,7 +178,7 @@ export default function Register() {
             disabled={loading}
             sx={{ mt: 3, mb: 2 }}
           >
-            {loading ? "Subscribing..." : "Subscribe"}
+            {loading ? "Registering..." : "Register"}
           </Button>
 
           <Box sx={{ textAlign: "center", mt: 2 }}>
