@@ -75,7 +75,7 @@ export const errorHandler = (
   }
   else {
     console.error(err);
-    res.status(500).json({ message: "Internal server error.", error: err.message });
+    res.status(500).json({ message: "Internal server error   .   ", error: err.message });
     return;
   }
 };
