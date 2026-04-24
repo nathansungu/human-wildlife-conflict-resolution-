@@ -292,7 +292,8 @@ export const getReportsService = async () => {
 };
 
 export const restartDetectionService = async () => {
-  const response = await axios.post("http://localhost:5000/restart");
+  const url = process.env.DETECTION_SERVICE_URL ;
+  const response = await axios.post(`${url}/restart`);
   if (response.status !== 200) {
     return Promise.reject(new Error("failed to restart detection service"));
   }

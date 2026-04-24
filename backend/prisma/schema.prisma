@@ -7,6 +7,89 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  name       String?
+  phone      String?  @unique
+  subscribed Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  password   String?
+  roleName   String   @default("user")
+  role       Roles    @relation(fields: [roleName], references: [name])
+}
+
+model Roles {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model AnimalLogs {
+  id         String   @id @default(uuid())
+  animalId   String
+  cameraId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isVerified Boolean  @default(true)
+  confidence Float
+  status     String   @default("PENDING")
+  animal     Animals  @relation(fields: [animalId], references: [id])
+  camera     Cameras  @relation(fields: [cameraId], references: [id])
+}
+
+model Alerts {
+  id         String   @id @default(uuid())
+  cameraId   String
+  message    String
+  status     String   @default("SENT")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  animalName String
+  animal     Animals  @relation(fields: [animalName], references: [name])
+  camera     Cameras  @relation(fields: [cameraId], references: [id])
+}
+
+model DailyReports {
+  id          String   @id @default(uuid())
+  date        DateTime
+  count       Int
+  cameraId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  speciesName String
+  animal      Animals  @relation(fields: [speciesName], references: [name])
+
+  @@unique([date, speciesName, cameraId])
+}
+
+model Animals {
+  id                 String             @id @default(uuid())
+  name               String             @unique
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  conservationStatus ConservationStatus @default(endangered)
+  alertPriority      AlertPriority      @default(high)
+  alerts             Alerts[]
+  logs               AnimalLogs[]
+  reports            DailyReports[]
+}
+
+model Cameras {
+  id        String       @id @default(uuid())
+  name      String
+  location  String
+  streamUrl String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  isActive  Boolean      @default(true)
+  alerts    Alerts[]
+  logs      AnimalLogs[]
+}
+
 enum ConservationStatus {
   endangered
   vulnerable
@@ -17,89 +100,4 @@ enum AlertPriority {
   low
   medium
   high
-}
-
-model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  name       String?
-  phone      String?  @unique  
-  roleName    String  @default("user")
-  password   String?
-  role       Roles    @relation(fields: [roleName], references: [name])
-  subscribed Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-model Roles {
-  id        String   @id @default(uuid())
-  name      String   @unique  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
-}
-model AnimalLogs {
-  id       String  @id @default(uuid())
-  animalId String
-  cameraId String 
-  confidence Float
-  isVerified Boolean @default(true) 
-  status String @default("PENDING")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  camera Cameras @relation(fields: [cameraId], references: [id])
-  animal    Animals  @relation(fields: [animalId], references: [id])
-}
-
-model Alerts {
-  id        String   @id @default(uuid())
-  animalName String
-  cameraId  String
-  message   String
-  status    String   @default("SENT")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  animal    Animals  @relation(fields: [animalName], references: [name])
-  camera    Cameras  @relation(fields: [cameraId], references: [id])
-}
-
-model DailyReports {
-  id        String   @id @default(uuid())
-  date      DateTime
-  speciesName String
-  @@unique([date, speciesName, cameraId])
-  count     Int
-  cameraId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  animal    Animals  @relation(fields: [speciesName], references: [name])
-}
-
-model Animals {
-  id                 String              @id @default(uuid())
-  name               String              @unique
-  conservationStatus ConservationStatus  @default(endangered)
-  alertPriority      AlertPriority       @default(high)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-
-  logs               AnimalLogs[]
-  alerts             Alerts[]
-  reports            DailyReports[]
-}
-
-model Cameras {
-  id        String       @id @default(uuid())
-  name      String
-  location  String
-  streamUrl String
-  isActive  Boolean       @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  logs      AnimalLogs[]
-  alerts    Alerts[]
 }
