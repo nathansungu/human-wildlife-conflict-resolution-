@@ -47,7 +47,7 @@ export const addUserService = async (
       where: { email },
       data: {
         password: hashedPassword,
-        roleName: roleName || "user",
+        roleName: roleName && roleName,
         
       },
     });
