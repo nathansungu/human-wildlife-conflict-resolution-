@@ -2,21 +2,63 @@ import prismaInstance from "../prismaInstance";
 import bcrypt from "bcrypt";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 
+type User =  {
+    id?: string | undefined;
+    name?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    roleName?: "user" | "admin" | undefined;
+    organizationId?: string | undefined;
+};
 export const subscribeService = async (
   phone: string,
   name: string,
-  email: string, ) => {
+  email: string, 
+  organizationId: string
+) => {
   const newUser = await prismaInstance.subscribers.create({
     data: {
       phone,
       name,
       email,
+      organizationId,
     },
   });
   if (!newUser) {
     return Promise.reject(new Error("failed to subscribe"));
   }
   return newUser;
+};
+
+export const getSubscribersService = async (roleName: string, organizationId?: string, user?: User) => {
+  const subscribers = await prismaInstance.subscribers.findMany({
+    where: {
+      organizationId: organizationId && organizationId,
+      email: user?.email && user.email,
+      name: user?.name && user?.name,
+      phone: user?.phone && user?.phone,
+      id: user?.id && user?.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      organizationId: true,
+      organization: {
+        select: {
+          name: true,
+        },
+      },
+      isPhoneVerified: true,
+      isEmailVerified: true,
+      createdAt: true,
+    },
+  });
+  if (roleName !== "superadmin") {
+    return subscribers.filter((subscriber)=> subscriber.organizationId === user?.organizationId)
+  }
+  return subscribers;
 };
 
 export const addUserService = async (
@@ -136,12 +178,12 @@ export const loginUserService = async (
 
   // return token
   const accessToken = sign(
-    { id: user.id, name: user.name, roleName: user.roleName },
+    { id: user.id, name: user.name, roleName: user.roleName, organizationId: user.organizationId },
     process.env.JWT_ACCESSTOKEN_SECRET as string,
     { expiresIn: "5m" },
   );
   const refreshToken = sign(
-    { id: user.id, name: user.name, roleName: user.roleName },
+    { id: user.id, name: user.name, roleName: user.roleName, organizationId: user.organizationId },
     process.env.JWT_REFRESHTOKEN_SECRET as string,
     { expiresIn: "1d" },
   );
@@ -164,7 +206,7 @@ export const refreshTokenService = async (refreshToken: string) => {
     throw new Error("invalid refresh token");
   }
   const accessToken = sign(
-    { id: user.id, name: user.name, roleName: user.roleName },
+    { id: user.id, name: user.name, roleName: user.roleName, organizationId: user.organizationId },
     process.env.JWT_ACCESSTOKEN_SECRET as string,
     { expiresIn: "5m" },
   );

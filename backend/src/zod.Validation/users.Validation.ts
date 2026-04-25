@@ -12,6 +12,7 @@ export const subscribeUserValidation = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
   phone: z.string().length(9, "Phone number must be 9 digits"),
+  organizationId: z.string().min(5, "Organization ID is required"),
 });
 
 // update user
@@ -34,6 +35,11 @@ export const updateUserValidation = z.object({
 
 export const getUserValidation = z.object({
   id: z.string().optional(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  roleName: z.enum(["admin", "user"]).optional(),
+  organizationId: z.string().optional(),
 });
 
 export const loginValidation = z.object({

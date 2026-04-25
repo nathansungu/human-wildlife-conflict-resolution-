@@ -1,6 +1,6 @@
 // check if user is authenticated
 
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 import { UserPayload } from "../../@types/express";
 
@@ -27,9 +27,11 @@ export const checkAuthentication = (
   }
 };
 
-export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (req.user?.roleName !== "admin") {
-    return res.status(403).json({ message: "Forbidden" });
-  }
-  next();
+export const authorizeRoles = (...allowedRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !allowedRoles.includes(req.user.roleName)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
+  };
 };
