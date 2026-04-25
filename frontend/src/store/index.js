@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { authService } from "../services/api";
 
 export const useAuthStore = create(
   persist(
@@ -58,4 +57,15 @@ export const useUserStore = create((set) => ({
   setError: (error) => set({ error }),
 
   
+}));
+
+//organization Store
+export const useOrganizationStore = create((set) => ({
+  organizations: [],
+  isLoading: false, 
+  error: null,
+
+  setLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
+  setOrganizations: (organizations) => set({ organizations }),
 }));
