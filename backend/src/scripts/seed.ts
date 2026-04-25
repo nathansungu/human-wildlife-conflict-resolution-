@@ -11,7 +11,7 @@ async function main() {
     "baboon",
   ];
 
-  const roles = ["admin", "user"];
+  const roles = ["admin", "user", "subscriber", "superadmin"];
 
   for (const name of animals) {
     await prismaInstance.animals.create({

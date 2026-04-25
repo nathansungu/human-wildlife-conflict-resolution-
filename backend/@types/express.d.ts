@@ -2,6 +2,7 @@ export interface UserPayload {
   id: string;
   name: string;
   roleName: string;  
+  organizationId?: string;
 }
 
 declare global {

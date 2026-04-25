@@ -6,6 +6,7 @@ import {
   loginUserService,
   refreshTokenService,
   subscribeService,
+  getSubscribersService
 } from "../services/user.Service";
 import { Request, Response } from "express";
 import {
@@ -15,6 +16,7 @@ import {
   subscribeUserValidation,
   loginValidation,
 } from "../zod.Validation/users.Validation";
+import { get } from "node:http";
 
 export const addUserController = async (req: Request, res: Response) => {
   if (req.user?.roleName == "admin") {
@@ -43,12 +45,19 @@ export const addUserController = async (req: Request, res: Response) => {
 };
 
 export const subscribeController = async (req: Request, res: Response) => {
-  const { phone, name, email } = await subscribeUserValidation.parseAsync(
+  const { phone, name, email, organizationId } = await subscribeUserValidation.parseAsync(
     req.body,
   );
-  const newUser = await subscribeService(phone, name, email);
+  const newUser = await subscribeService(phone, name, email, organizationId);
   res.status(201).json(newUser);
 };
+
+export const getSubscribersController = async (req: Request, res: Response) => {
+  const {roleName, organizationId} = req.user!;
+  const user = await getUserValidation.parseAsync(req.body);
+  const subscribers = await getSubscribersService(roleName, organizationId, user );
+  res.status(200).json(subscribers);
+}
 
 export const updateUserController = async (req: Request, res: Response) => {
   const { phone, name, email, roleName, password, subscribed,id } =

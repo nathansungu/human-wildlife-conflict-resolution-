@@ -5,12 +5,13 @@ import {
   subscribeController,
   loginController,
   refreshTokenController,
-  loggedInUSerController
+  loggedInUSerController,
+  getSubscribersController
 } from "../controllers/users.Controller";
 
 import Route from "express";
 import {
-  checkAdmin,
+  authorizeRoles,
   checkAuthentication,
 
 } from "../middlewares/checkAuthentication.Middleware";
@@ -21,8 +22,9 @@ users.post("/register", addUserController);
 users.post("/login", loginController);
 users.post("/refresh-token", refreshTokenController);
 users.post("/subscribe", subscribeController);
-users.patch("/", checkAuthentication,checkAdmin, updateUserController);
-users.get("/", checkAuthentication, checkAdmin, getUsersController);
+users.get("/subscribers", checkAuthentication, authorizeRoles("admin", "superadmin"), getSubscribersController);
+users.patch("/", checkAuthentication, authorizeRoles("admin", "superadmin"), updateUserController);
+users.get("/", checkAuthentication, authorizeRoles("admin", "superadmin"), getUsersController);
 users.get("/me", checkAuthentication, loggedInUSerController);
 
 export default users;
