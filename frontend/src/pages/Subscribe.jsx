@@ -6,12 +6,17 @@ import {
   Link,
   Paper,
   Container,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import toast from "react-hot-toast";
 import { subscribeUserValidation } from "../validations/index";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {authService} from "../services/api"
+import { authService, organizationService } from "../services/api";
+import { useOrganizationStore } from "../store";
 const pageInfo = {
   Subscribe: {
     title: "Subscribe",
@@ -20,14 +25,34 @@ const pageInfo = {
 };
 
 export default function Subscribe() {
+  const { organizations, setOrganizations } = useOrganizationStore();
   const info = pageInfo["Subscribe"];
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    organizationId: "",
   });
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    organizationService
+      .getAll()
+      .then((res) => {
+        const organizations = res.data;
+        setOrganizations(organizations);
+      })
+      .catch((error) => {
+        console.error("Error fetching organizations:", error);
+        setErrors("Failed to load organizations");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [setOrganizations]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +67,7 @@ export default function Subscribe() {
     e.preventDefault();
     setErrors({});
     try {
-      const validatedData = await subscribeUserValidation.parseAsync(formData);
+      await subscribeUserValidation.parseAsync(formData);
     } catch (error) {
       const fieldErrors = {};
       error.errors.forEach((err) => {
@@ -58,7 +83,7 @@ export default function Subscribe() {
       toast.success("Subscription successful!");
       navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message );
+      toast.error(error.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -66,97 +91,117 @@ export default function Subscribe() {
 
   return (
     <Box
-  sx={{
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    p: 2,
-  }}
->
-  <Container maxWidth="sm">
-    <Box>
-      <Typography variant="h3" gutterBottom fontWeight={800}>
-        {info.title}
-      </Typography>
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Box>
+          <Typography variant="h3" gutterBottom fontWeight={800}>
+            {info.title}
+          </Typography>
 
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        {info.desc}
-      </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+            {info.desc}
+          </Typography>
 
-      <Paper
-        elevation={0}
-        sx={{
-          p: 4,
-          transition: "all 0.3s",
-          "&:hover": {
-            borderColor: "primary.main",
-            transform: "translateY(-4px)",
-          },
-        }}
-      >
-        <Box component="form">
-          <TextField
-            fullWidth
-            label="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            error={!!errors.name}
-            helperText={errors.name}
-            margin="normal"
-            required
-          />
-
-          <TextField
-            fullWidth
-            label="Email Address"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            error={!!errors.email}
-            helperText={errors.email}
-            margin="normal"
-            required
-          />
-
-          <TextField
-            fullWidth
-            label="Phone Number"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            error={!!errors.phone}
-            helperText={errors.phone}
-            margin="normal"
-            required
-          />
-
-          <Button
-            fullWidth
-            type="button"
-            variant="contained"
-            size="large"
-            onClick={handleSubmit}
-            disabled={loading}
-            sx={{ mt: 3, mb: 2 }}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              transition: "all 0.3s",
+              "&:hover": {
+                borderColor: "primary.main",
+                transform: "translateY(-4px)",
+              },
+            }}
           >
-            {loading ? "Subscribing..." : "Subscribe"}
-          </Button>
+            <Box component="form">
+              <TextField
+                fullWidth
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                margin="normal"
+                required
+              />
 
-          <Box sx={{ textAlign: "center", mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Have an account?{" "}
-              <Link component={RouterLink} to="/login" color="primary">
-                Log in here
-              </Link>
-            </Typography>
-          </Box>
+              <TextField
+                fullWidth
+                label="Email Address"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                margin="normal"
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                error={!!errors.phone}
+                helperText={errors.phone}
+                margin="normal"
+                required
+              />
+
+              <FormControl fullWidth size="small">
+                <InputLabel id="org-label">Organization</InputLabel>
+                <Select
+                  labelId="org-label"
+                  value={formData.organizationId}
+                  label="Organization"
+                  onChange={handleChange}
+                >
+                  {organizations.length === 0 ? (
+                    <MenuItem disabled>No organizations available</MenuItem>
+                  ) : (
+                    organizations.map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+              </FormControl>
+
+              <Button
+                fullWidth
+                type="button"
+                variant="contained"
+                size="large"
+                onClick={handleSubmit}
+                disabled={loading}
+                sx={{ mt: 3, mb: 2 }}
+              >
+                {loading ? "Subscribing..." : "Subscribe"}
+              </Button>
+
+              <Box sx={{ textAlign: "center", mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Have an account?{" "}
+                  <Link component={RouterLink} to="/login" color="primary">
+                    Log in here
+                  </Link>
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
         </Box>
-      </Paper>
+      </Container>
     </Box>
-  </Container>
-</Box>
   );
 }

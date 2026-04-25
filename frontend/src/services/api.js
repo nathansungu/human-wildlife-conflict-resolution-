@@ -75,4 +75,9 @@ export const dashboardService = {
     api.get(`/detections/detections?limit=${limit}`),
 };
 
+//organizationService
+export const organizationService = {
+  getAll: () => api.get("/organizations"),
+  create: (data) => api.post("/organizations", data),
+};
 export default api;
