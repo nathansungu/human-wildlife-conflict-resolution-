@@ -17,7 +17,41 @@ model User {
   updatedAt  DateTime @updatedAt
   password   String?
   roleName   String   @default("user")
+  organizationId String?
   role       Roles    @relation(fields: [roleName], references: [name])
+  organization Organizations? @relation(fields: [organizationId], references: [id])
+}
+model Organizations {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  subscriptionType   SubscriptionType   @default(basic)
+  isActive  Boolean  @default(true)
+  subscriptionStartDate DateTime?
+  validUntil  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  subscribers Subscribers[]
+}
+
+model Subscribers {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  phone      String @unique
+  PhoneVerificationCode String?
+  emailVerificationCode String?
+  isPhoneVerified Boolean  @default(false)
+  isEmailVerified Boolean  @default(false)
+  isActive   Boolean  @default(true)
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  organizationId String?
+  @@unique([email, organizationId])
+  @@unique([phone, organizationId])
+  organization   Organizations? @relation(fields: [organizationId], references: [id]) 
 }
 
 model Roles {
@@ -100,4 +134,10 @@ enum AlertPriority {
   low
   medium
   high
+}
+
+enum SubscriptionType {
+  basic
+  premium
+  enterprise
 }
