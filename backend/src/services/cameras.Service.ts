@@ -1,4 +1,3 @@
-import { ca } from "zod/v4/locales";
 import prismaInstance from "../prismaInstance";
 
 export const allCamerasService = async (location?: string) => {
