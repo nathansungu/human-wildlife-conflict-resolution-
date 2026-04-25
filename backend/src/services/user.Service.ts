@@ -6,13 +6,11 @@ export const subscribeService = async (
   phone: string,
   name: string,
   email: string, ) => {
-  const newUser = await prismaInstance.user.create({
+  const newUser = await prismaInstance.subscribers.create({
     data: {
       phone,
-      roleName: "user",
       name,
       email,
-      subscribed: true,
     },
   });
   if (!newUser) {
