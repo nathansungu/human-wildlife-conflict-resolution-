@@ -125,7 +125,7 @@ export default function Dashboard() {
         Dashboard Overview
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Monitor wildlife detections and camera activity in real-time
+        Monitor wildlife detections and camera activity in real time
       </Typography>
 
       <Grid container spacing={3}>
@@ -134,7 +134,7 @@ export default function Dashboard() {
             change={12} trend="up" icon={PetsIcon} color="#6366F1" />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
-          <StatCard title="Active Cameras" value={stats.activeCameras || 2}
+          <StatCard title="Active Cameras" value={stats.activeCameras || 0}
             change={0} trend="up" icon={VideocamIcon} color="#10B981" />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -148,7 +148,7 @@ export default function Dashboard() {
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 1 }}>
-        {/* Bar chart — detections per day per species */}
+        {/* Bar chart  detections per day per species */}
         <Grid item xs={12} lg={8}>
           <Card>
             <CardContent>
@@ -173,7 +173,7 @@ export default function Dashboard() {
           </Card>
         </Grid>
 
-        {/* Pie chart — total count per species */}
+        {/* Pie chart total count per species */}
         <Grid item xs={12} lg={4}>
           <Card>
             <CardContent>
