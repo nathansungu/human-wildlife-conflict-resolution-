@@ -55,7 +55,8 @@ export const subscribeController = async (req: Request, res: Response) => {
 export const getSubscribersController = async (req: Request, res: Response) => {
   const {roleName, organizationId} = req.user!;
   const user = await getUserValidation.parseAsync(req.body);
-  const subscribers = await getSubscribersService(roleName, organizationId, user );
+  const organizationIdToUse = roleName === "superadmin" ? undefined : organizationId;
+  const subscribers = await getSubscribersService(roleName, organizationIdToUse, user );
   res.status(200).json(subscribers);
 }
 
@@ -76,7 +77,9 @@ export const updateUserController = async (req: Request, res: Response) => {
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { id } = await getUserValidation.parseAsync(req.query);
-  const users = await getUSerService(id);
+  const isSuperAdmin = req.user?.roleName === "superadmin";
+  const organizationId = isSuperAdmin ? undefined : req.user?.organizationId;
+  const users = await getUSerService(id, organizationId);
   res.status(200).json(users);
 };
 
