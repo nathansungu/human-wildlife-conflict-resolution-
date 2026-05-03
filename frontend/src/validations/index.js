@@ -13,7 +13,7 @@ export const subscribeUserValidation = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().length(9, "Phone number must be 9 digits"),
-  organizationId: z.string().uuid("Invalid organization ID"),
+  organizationId: z.string().min(1, "Invalid organization ID"),
 });
 
 export const updateUserValidation = z.object({
