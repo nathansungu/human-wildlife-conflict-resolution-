@@ -17,7 +17,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (originalRequest.url.includes("/users/refresh-token")) {
-      return Promise.reject(error);
+      return Promise.reject("login required");
     }
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -27,7 +27,7 @@ api.interceptors.response.use(
         return api.request(originalRequest);
       } catch (refreshError) {
         navigateTo("/login");
-        return Promise.reject(refreshError);
+        return Promise.reject("Session expired. Please log in again.");
       }
     }
 
