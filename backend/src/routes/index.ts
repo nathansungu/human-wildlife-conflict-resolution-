@@ -10,6 +10,6 @@ routes.use("/cameras",camerasRoutes)
 routes.use("/detections", detectionRoutes)
 routes.use("/users", users)
 routes.use("/organizations", organizations)
-routes.use("/role", checkAuthentication, roles)
+routes.use("/roles", checkAuthentication, roles)
 
 export default routes

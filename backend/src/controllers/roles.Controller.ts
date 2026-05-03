@@ -1,5 +1,5 @@
 import { asyncHandler } from "../middlewares/asyncHandler";
-import { createRoleService } from "../services/roles.Service";
+import { createRoleService, getAllRolesService } from "../services/roles.Service";
 import { Request, Response } from "express";
 import { createRoleValidation } from "../zod.Validation/roles.Validation";
 export const addRoleController = asyncHandler(
@@ -8,5 +8,12 @@ export const addRoleController = asyncHandler(
 
     const newRole = await createRoleService(name);
     res.status(201).json(newRole);
+  },
+);
+
+export const getAllRolesController = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const roles = await getAllRolesService();
+    res.status(200).json(roles);
   },
 );

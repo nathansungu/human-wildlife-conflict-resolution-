@@ -27,9 +27,11 @@ model Organizations {
   subscriptionType   SubscriptionType   @default(basic)
   isActive  Boolean  @default(true)
   subscriptionStartDate DateTime?
-  validUntil  DateTime?
+  subscriptionValidUntil  DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  cameras   Cameras[]
   users     User[]
   subscribers Subscribers[]
 }
@@ -117,9 +119,12 @@ model Cameras {
   name      String
   location  String
   streamUrl String
+  organizationId String
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   isActive  Boolean      @default(true)
+
+  organization Organizations @relation(fields: [organizationId], references: [id])
   alerts    Alerts[]
   logs      AnimalLogs[]
 }

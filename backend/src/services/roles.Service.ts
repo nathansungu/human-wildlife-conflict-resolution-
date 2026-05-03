@@ -10,3 +10,12 @@ export const createRoleService = async (name: string) => {
   return newRole;
 }
 
+export const getAllRolesService = async () => {
+  const roles = await prisma.roles.findMany();
+  if (!roles) {
+    return Promise.reject(new Error("failed to get roles"));
+  }
+  return roles;
+}
+
+

@@ -5,7 +5,7 @@ import {
 } from "../services/cameras.Service";
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler";
-import { addCameraValidation, getCamerasValidation, updateCameraStatusValidation } from "../zod.Validation/cameras.Validation";
+import { addCameraValidation,  updateCameraStatusValidation } from "../zod.Validation/cameras.Validation";
 
 export const allCamerasController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -16,10 +16,10 @@ export const allCamerasController = asyncHandler(
 
 export const addCameraControler = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, location, streamUrl } = await addCameraValidation.parseAsync(
+    const { name, location, streamUrl, organizationId } = await addCameraValidation.parseAsync(
       req.body,
     );
-    const camera = await addCameraService(name, location, streamUrl);
+    const camera = await addCameraService(name, location, streamUrl, organizationId);
 
     if (camera){
       res.status(200).json({"message": "camera added succesfully"})

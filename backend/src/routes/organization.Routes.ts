@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { getOrganizationsController } from "../controllers/organization.Controller";
+import { getOrganizationsController, addOrganizationController } from "../controllers/organization.Controller";
+
 
 const organizations = Router();
 organizations.get("/", getOrganizationsController);
+organizations.post("/", addOrganizationController);
 export default organizations;

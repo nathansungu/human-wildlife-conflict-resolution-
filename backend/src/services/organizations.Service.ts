@@ -6,3 +6,13 @@ export const getOrganizationsService = async () => {
     });
     return organizations;
 };
+
+export const addOrganizationService = async (name: string) => {
+    const organization = await prisma.organizations.create({
+        data: {name}
+    });
+    if (!organization) {
+        return Promise.reject(new Error("Failed to create organization"));
+    }
+    return organization;
+}
