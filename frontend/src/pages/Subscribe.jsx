@@ -67,6 +67,7 @@ export default function Subscribe() {
     e.preventDefault();
     setErrors({});
     try {
+      console.log("Validating form data:", formData);
       await subscribeUserValidation.parseAsync(formData);
     } catch (error) {
       const fieldErrors = {};
@@ -161,9 +162,11 @@ export default function Subscribe() {
               <FormControl fullWidth size="small">
                 <InputLabel id="org-label">Organization</InputLabel>
                 <Select
-                  labelId="org-label"
                   value={formData.organizationId}
                   label="Organization"
+                  name="organizationId"
+                  error={!!errors.organizationId}
+                  helpertext={errors.organizationId}
                   onChange={handleChange}
                 >
                   {organizations.length === 0 ? (
