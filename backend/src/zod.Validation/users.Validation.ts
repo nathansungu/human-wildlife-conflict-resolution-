@@ -1,5 +1,5 @@
 import z from "zod";
-import { id } from "zod/v4/locales";
+import { is } from "zod/locales";
 
 export const addUserValidation = z.object({
   name: z.string().min(1, "Name is required"),
@@ -21,10 +21,7 @@ export const updateUserValidation = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required").optional(),
   email: z.email("Invalid email address").optional(),
-  phone: z
-    .string()
-    .min(9, "Phone number must be at least 9 digits")
-    .optional(),
+  phone: z.string().min(9, "Phone number must be at least 9 digits").optional(),
   roleName: z.enum(["admin", "user"]).optional(),
   password: z
     .string()
@@ -47,3 +44,13 @@ export const loginValidation = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+export const updateSubscriberValidation = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Name is required").optional(),
+  email: z.email("Invalid email address").optional(),
+  phone: z.string().min(9, "Phone number must be at least 9 digits").optional(),
+  subscribed: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+  organizationId: z.string().min(5, "Organization ID is required").optional(),
+  isDeleted: z.boolean().optional(),
+});
