@@ -6,7 +6,8 @@ import {
   loginUserService,
   refreshTokenService,
   subscribeService,
-  getSubscribersService
+  getSubscribersService,
+  updateSubscriberService
 } from "../services/user.Service";
 import { Request, Response } from "express";
 import {
@@ -15,8 +16,8 @@ import {
   getUserValidation,
   subscribeUserValidation,
   loginValidation,
+  updateSubscriberValidation,
 } from "../zod.Validation/users.Validation";
-import { get } from "node:http";
 
 export const addUserController = async (req: Request, res: Response) => {
   if (req.user?.roleName == "admin") {
@@ -44,6 +45,7 @@ export const addUserController = async (req: Request, res: Response) => {
   }
 };
 
+// subscribe controllers 
 export const subscribeController = async (req: Request, res: Response) => {
   const { phone, name, email, organizationId } = await subscribeUserValidation.parseAsync(
     req.body,
@@ -54,11 +56,19 @@ export const subscribeController = async (req: Request, res: Response) => {
 
 export const getSubscribersController = async (req: Request, res: Response) => {
   const {roleName, organizationId} = req.user!;
-  const user = await getUserValidation.parseAsync(req.body);
   const organizationIdToUse = roleName === "superadmin" ? undefined : organizationId;
-  const subscribers = await getSubscribersService(roleName, organizationIdToUse, user );
+  const subscribers = await getSubscribersService(organizationIdToUse);
   res.status(200).json(subscribers);
 }
+
+export  const updateSubscriberController = async (req: Request, res: Response) => {
+  const { id, name, email, phone, organizationId, isActive, isDeleted } = await updateSubscriberValidation.parseAsync(
+    req.body,
+  );
+  const updatedSubscriber = await updateSubscriberService(id, name, email, phone, organizationId, isActive, isDeleted );
+  res.status(200).json(updatedSubscriber);
+};
+
 
 export const updateUserController = async (req: Request, res: Response) => {
   const { phone, name, email, roleName, password, subscribed,id } =

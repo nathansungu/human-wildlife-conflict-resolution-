@@ -6,7 +6,8 @@ import {
   loginController,
   refreshTokenController,
   loggedInUSerController,
-  getSubscribersController
+  getSubscribersController,
+  updateSubscriberController
 } from "../controllers/users.Controller";
 
 import Route from "express";
@@ -26,5 +27,6 @@ users.get("/subscribers", checkAuthentication, authorizeRoles("admin", "superadm
 users.patch("/", checkAuthentication, authorizeRoles("admin", "superadmin"), updateUserController);
 users.get("/", checkAuthentication, authorizeRoles("admin", "superadmin"), getUsersController);
 users.get("/me", checkAuthentication, loggedInUSerController);
+users.patch("/subscriber", checkAuthentication, authorizeRoles("admin", "superadmin"), updateSubscriberController);
 
 export default users;
