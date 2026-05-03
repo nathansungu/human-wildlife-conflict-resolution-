@@ -108,10 +108,11 @@ export const addUserService = async (
   return newUser;
 }
 
-export const getUSerService = async (id?: string) => {
+export const getUSerService = async (id?: string, organizationId?: string) => {
   const users = await prismaInstance.user.findMany({
     where: {
       id: id && id,
+      organizationId: organizationId && organizationId,
     },
     select: {
       id: true,
@@ -119,6 +120,12 @@ export const getUSerService = async (id?: string) => {
       email: true,
       phone: true,
       roleName: true,
+      organizationId: true,
+      organization: {
+        select: {
+          name: true,
+        },
+      },
       subscribed: true,
       createdAt: true,
     },
