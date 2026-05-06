@@ -1,13 +1,12 @@
 import prismaInstance from "../prismaInstance";
 
 export const allCamerasService = async (
-  location?: string,
   organizationId?: string,
 ) => {
   const cameras = await prismaInstance.cameras.findMany({
     where: {
-      location: location && location,
       isActive: true,
+      organizationId: organizationId && organizationId,
     },
     select: {
       id: true,
@@ -16,6 +15,8 @@ export const allCamerasService = async (
       streamUrl: true,
       organizationId: true,
       organization: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
   // filter to only include cameras from organizations with valid subscriptions

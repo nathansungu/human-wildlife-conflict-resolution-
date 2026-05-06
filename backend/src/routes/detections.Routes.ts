@@ -4,8 +4,8 @@ import { authorizeRoles, checkAuthentication } from "../middlewares/checkAuthent
 import  {getDashboardStatsController} from "../controllers/animal.controller"
 const detectionRoute = Router()
 
-detectionRoute.get("/", getDetectionsController)
-detectionRoute.get("/daily-report", getDailyReportController)
+detectionRoute.get("/",checkAuthentication, getDetectionsController)
+detectionRoute.get("/daily-report", checkAuthentication, getDailyReportController)
 detectionRoute.get("/dashboard-stats",checkAuthentication, getDashboardStatsController)
 detectionRoute.get("/reports",checkAuthentication, getAllReportsController)
 detectionRoute.post("/",checkAuthentication, authorizeRoles("admin", "superadmin"), recordDetectionController)

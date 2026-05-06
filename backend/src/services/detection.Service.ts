@@ -1,4 +1,3 @@
-import { tr } from "zod/v4/locales";
 import prismaInstance from "../prismaInstance";
 import {
   nodemailerTransporter,
@@ -7,20 +6,17 @@ import {
 import axios from "axios";
 
 export const allDetectionsService = async (
+  orgationId?: string,
   speciesId?: string,
   cameraId?: string,
-  date?: Date,
 ) => {
   const detections = await prismaInstance.animalLogs.findMany({
     where: {
       animalId: speciesId && speciesId,
-      cameraId: cameraId && cameraId,
-      createdAt: date
-        ? {
-            gte: new Date(date.setHours(0, 0, 0, 0)),
-            lt: new Date(date.setHours(23, 59, 59, 999)),
-          }
-        : undefined,
+      cameraId: cameraId && cameraId, 
+      camera: {
+        organizationId: orgationId && orgationId,
+      },
     },
     select: {
       animal: { select: { name: true } },
