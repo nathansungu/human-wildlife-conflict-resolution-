@@ -178,7 +178,7 @@ export default function Login() {
             </Button>
 
             <Box sx={{ textAlign: "center", mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography component="div" variant="body2" color="text.secondary">
                 Don't have an account?{" "}
                 <Box
                   alignItems={"center"}

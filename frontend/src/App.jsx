@@ -9,9 +9,11 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Subscribe from './pages/Subscribe';
+import Subscribers from './pages/Subscribers';
 import Register from './pages/Register';
 import PrivateRoute from './components/PrivateRoute';
 import LandingPage from './pages/landing';
+import Organizations from './pages/Organizations';
 
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -75,7 +77,8 @@ function App() {
           <Route path="cameras" element={<Cameras />} />
           <Route path="users" element={<Users />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="subscriptions" element={<Subscribers />} />
+          <Route path="organizations" element={<Organizations />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -19,6 +19,7 @@ import {
   People as PeopleIcon,
   Assessment as AssessmentIcon,
   Settings as SettingsIcon,
+
 } from '@mui/icons-material';
 import { useAuthStore } from '../store';
 
@@ -30,7 +31,8 @@ const navigation = [
   { name: 'Cameras', path: '/cameras', icon: VideocamIcon },
   { name: 'Users', path: '/users', icon: PeopleIcon },
   { name: 'Reports', path: '/reports', icon: AssessmentIcon },
-  // { name: 'Settings', path: '/settings', icon: SettingsIcon },
+  { name: 'Subscribers', path: '/subscriptions', icon: PeopleIcon },
+  {name: 'Organizations', path: '/organizations', icon: PeopleIcon  },
 ];
 
 export default function Sidebar({ open, onClose }) {

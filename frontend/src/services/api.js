@@ -47,6 +47,8 @@ export const userService = {
   register: (data) => api.post("/users/register", data),
   getAll: () => api.get("/users"),
   update: (data) => api.patch("/users", data),
+  getSubscribers: () => api.get("/users/subscribers"),
+  updateSubscriber: (data) => api.patch("/users/subscribers", data),
 };
 
 //cameraService
@@ -77,7 +79,7 @@ export const dashboardService = {
 
 //organizationService
 export const organizationService = {
-  getAll: () => api.get("/organizations"),
-  create: (data) => api.post("/organizations", data),
+  getAllOrganizations: () => api.get("/organizations"),
+  createOrganization: (data) => api.post("/organizations", data),
 };
 export default api;
