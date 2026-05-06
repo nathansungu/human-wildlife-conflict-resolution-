@@ -21,6 +21,7 @@ import {
   DialogActions,
   Button,
   Stack,
+  MenuItem
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -31,10 +32,10 @@ import {
   AddCircleOutline as AddIcon,
 } from "@mui/icons-material";
 import { useState, useEffect } from "react";
-import { cameraService } from "../services/api";
+import { cameraService, organizationService } from "../services/api";
 import toast from "react-hot-toast";
 import { addCameraValidation } from "../validations/index";
-import {useAuthStore} from "../store/index";
+import { useAuthStore , useOrganizationStore} from "../store/index";
 
 const EMPTY_FORM = { name: "", location: "", streamUrl: "" };
 
@@ -49,10 +50,13 @@ export default function Cameras() {
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuthStore();
+  const { organizations, setOrganizations } = useOrganizationStore();
+  const{getAllOrganizations} = organizationService
+  
   const role = user?.roleName;
-  if (role !== "admin") {
+  if (role !== "admin" && role !== "superadmin") {
     return (
-      <Box  textAlign="center" py={10}>
+      <Box textAlign="center" py={10}>
         <Typography variant="h4" color="error" gutterBottom>
           Access Denied
         </Typography>
@@ -70,10 +74,19 @@ export default function Cameras() {
     try {
       const res = await cameraService.getAll();
       setCameras(res.data);
+      console.log("Fetched cameras:", res.data);
     } catch (err) {
       toast.error("Failed to load cameras");
     }
   };
+  const fetchOrganizations = async () => {
+    try {
+      const res = await organizationService.getAllOrganizations();
+      setOrganizations(res.data);
+    } catch (err) {
+      toast.error("Failed to load organizations");
+    }
+  }
 
   const handleToggleStatus = async (camera) => {
     try {
@@ -113,7 +126,7 @@ export default function Cameras() {
 
     try {
       const data = await addCameraValidation.parseAsync(form);
-
+      
       await cameraService.create(data);
       toast.success(`Camera "${data.name}" added`);
       setAddOpen(false);
@@ -145,13 +158,17 @@ export default function Cameras() {
     setForm(EMPTY_FORM);
     setFormErrors({});
   };
+  const allCameras = cameras?.allCameras ?? [];
 
-  const filtered = cameras.filter((c) =>
-    [c.name, c.location, c.streamUrl]
-      .join(" ")
+  const filtered = allCameras.filter((c) =>
+    `${c?.name || ""} ${c?.location || ""} ${c?.streamUrl || ""}`
       .toLowerCase()
-      .includes(search.toLowerCase()),
+      .includes(search?.toLowerCase() ?? ""),
   );
+  //if user ! superadmin show only cameras from their organization still on the filtered list
+  if (role !== "superadmin") {
+    filtered = filtered.filter((c) => c.organizationId === user.organizationId);
+  }
 
   const paginated = filtered.slice(
     page * rowsPerPage,
@@ -167,12 +184,15 @@ export default function Cameras() {
         sx={{ mb: 1 }}
       >
         <Typography variant="h3" fontWeight={800}>
-        Cameras
+          Cameras
         </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setAddOpen(true)}
+          onClick={() => {
+            setAddOpen(true);
+            fetchOrganizations();
+          }}
           sx={{ borderRadius: 2, fontWeight: 600 }}
         >
           Add Camera
@@ -190,12 +210,12 @@ export default function Cameras() {
           variant="outlined"
         />
         <Chip
-          label={`${cameras.filter((c) => c.isActive).length} Active`}
+          label={`${allCameras.filter((c) => c.isActive).length} Active`}
           color="success"
           variant="outlined"
         />
         <Chip
-          label={`${cameras.filter((c) => !c.isActive).length} Inactive`}
+          label={`${allCameras.filter((c) => !c.isActive).length} Inactive`}
           color="warning"
           variant="outlined"
         />
@@ -388,6 +408,31 @@ export default function Cameras() {
               placeholder="https://stream.example.com/cam1"
             />
           </Stack>
+          {/* if user is superadmin show organizations dropdown from the organization state pick orgid else use his organization id */}
+          {role === "superadmin" && (
+            <TextField
+              select
+              label="Organization"
+              size="small"
+              fullWidth
+              value={form.organizationId}
+              onChange={(e) => setForm({ ...form, organizationId: e.target.value })}
+              error={!!formErrors.organizationId}
+              helperText={formErrors.organizationId}
+            >
+              {organizations.map((org) => (
+                <MenuItem key={org.id} value={org.id}>
+                  {org.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+          {role !== "superadmin" && (
+            setForm({ ...form, organizationId: user.organizationId })
+            //log form data
+            
+          )}
+          
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={handleCloseAdd} disabled={submitting}>

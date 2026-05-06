@@ -49,10 +49,12 @@ export const useAppStore = create((set) => ({
 // User Store
 export const useUserStore = create((set) => ({
   users: [],
+  subscribers: [],
   loading: false,
   error: null,
 
   setUsers: (users) => set({ users }),
+  setSubscribers: (subscribers) => set({ subscribers }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
 

@@ -40,7 +40,7 @@ export default function Subscribe() {
   useEffect(() => {
     setLoading(true);
     organizationService
-      .getAll()
+      .getAllOrganizations()
       .then((res) => {
         const organizations = res.data;
         setOrganizations(organizations);

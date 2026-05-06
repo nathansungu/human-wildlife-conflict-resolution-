@@ -50,8 +50,8 @@ const AVATAR_COLORS = [
 const avatarColor = (id) =>
   AVATAR_COLORS[id?.charCodeAt(0) % AVATAR_COLORS.length];
 
-export default function Users() {
-  const [users, setUsers] = useState([]);
+export default function Subscribers() {
+  const [subscribers, setSubscribers ] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -76,18 +76,18 @@ export default function Users() {
   }, []);
   const fetchUsers = async () => {
     try {
-      const res = await userService.getAll();
-      setUsers(res.data);
+      const res = await userService.getSubscribers();
+      setSubscribers(res.data);
     } catch (err) {
-      toast.error("Failed to load users");
+      toast.error("Failed to load subscribers");
     }
   };
 
   const handleUpdate = async (user, patch) => {
     setUpdating(user.id);
     try {
-      await userService.update({ id: user.id, ...patch });
-      setUsers((prev) =>
+      await userService.updateSubscriber({ id: user.id, ...patch });
+      setSubscribers((prev) =>
         prev.map((u) => (u.id === user.id ? { ...u, ...patch } : u)),
       );
       toast.success("User updated");
@@ -102,7 +102,7 @@ export default function Users() {
     }
   };
 
-  const filtered = users.filter((u) =>
+  const filtered = subscribers.filter((u) =>
     [u.name, u.email, u.phone, u.roleName]
       .join(" ")
       .toLowerCase()
@@ -117,31 +117,22 @@ export default function Users() {
   return (
     <Box>
       <Typography variant="h3" gutterBottom fontWeight={800}>
-        Users
+        Subscribers
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Manage system users and permissions
+        Manage subscriber accounts and subscriptions
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip
           icon={<PeopleIcon />}
-          label={`${users.length} Total`}
+          label={`${subscribers.length} Total`}
           variant="outlined"
         />
+      
+      
         <Chip
-          label={`${users.filter((u) => u.roleName === "admin").length} Admins`}
-          color="error"
-          variant="outlined"
-        />
-        <Chip
-          display={user?.roleName === "superadmin" ? "inline-flex" : "none"}
-          label={`${users.filter((u) => u.roleName === "superadmin").length} Super Admins`}
-          color="success"
-          variant="outlined"
-        />
-        <Chip
-          label={`${users.filter((u) => u.subscribed).length} Subscribed`}
+          label={`${subscribers.filter((u) => u.subscribed).length} Subscribed`}
           color="success"
           variant="outlined"
         />
@@ -176,8 +167,7 @@ export default function Users() {
                     "Organization",
                     "Email",
                     "Phone",
-                    "Role",
-                    "Subscribed",
+                     "Subscribed",
                     "Joined",
                   ].map((h) => (
                     <TableCell
@@ -208,7 +198,6 @@ export default function Users() {
                 ) : (
                   paginated.map((u) => {
                     const isUpdating = updating === u.id;
-                    const isAdmin = u.roleName === "admin";
 
                     return (
                       <TableRow key={u.id} hover>
@@ -250,52 +239,11 @@ export default function Users() {
                           </Typography>
                         </TableCell>
 
-                        {/* Role toggle */}
-                        <TableCell>
-                          <Tooltip
-                            title={
-                              isAdmin ? "Demote to user" : "Promote to admin"
-                            }
-                          >
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={0.5}
-                              sx={{ width: "fit-content" }}
-                            >
-                              <Chip
-                                label={u.roleName}
-                                size="small"
-                                color={isAdmin ? "error" : "default"}
-                                variant="outlined"
-                                sx={{
-                                  textTransform: "capitalize",
-                                  fontWeight: 600,
-                                }}
-                              />
-                              <IconButton
-                                size="small"
-                                disabled={isUpdating}
-                                onClick={() =>
-                                  handleUpdate(u, {
-                                    roleName: isAdmin ? "user" : "admin",
-                                  })
-                                }
-                              >
-                                {isAdmin ? (
-                                  <UserIcon fontSize="small" color="action" />
-                                ) : (
-                                  <AdminIcon fontSize="small" color="error" />
-                                )}
-                              </IconButton>
-                            </Stack>
-                          </Tooltip>
-                        </TableCell>
-
+                        
                         {/* Subscribed toggle */}
                         <TableCell>
                           <Tooltip
-                            title={u.subscribed ? "Unsubscribe" : "Subscribe"}
+                            title={u.isActive ? "Unsubscribe" : "Subscribe"}
                           >
                             <Stack
                               direction="row"
@@ -304,19 +252,19 @@ export default function Users() {
                               sx={{ width: "fit-content" }}
                             >
                               <Chip
-                                label={u.subscribed ? "Yes" : "No"}
+                                label={u.isActive ? "Yes" : "No"}
                                 size="small"
-                                color={u.subscribed ? "success" : "warning"}
+                                color={u.isActive ? "success" : "warning"}
                                 variant="outlined"
                               />
                               <IconButton
                                 size="small"
                                 disabled={isUpdating}
                                 onClick={() =>
-                                  handleUpdate(u, { subscribed: !u.subscribed })
+                                  handleUpdate(u, { subscribed: !u.isActive })
                                 }
                               >
-                                {u.subscribed ? (
+                                {u.isActive ? (
                                   <UnsubIcon fontSize="small" color="warning" />
                                 ) : (
                                   <SubIcon fontSize="small" color="success" />
