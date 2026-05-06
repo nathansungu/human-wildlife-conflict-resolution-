@@ -9,12 +9,14 @@ export const getOrganizationsController = async (_req: Request, res: Response) =
 }
 
 export const addOrganizationController = async (req: Request, res: Response) => {
-    const { name } = await createOrganizationValidation.parseAsync(req.body);    
+    const { name , userId } = await createOrganizationValidation.parseAsync(req.body);
+    const { id:currentUserId, roleName  } = req.user!;    
+    const idToUSe = roleName === "superadmin" ? userId : currentUserId;
     if (!name) {
         res.status(400).json({ error: "Name is required" });
         return;
     }
-     await addOrganizationService(name);
+     await addOrganizationService(name, idToUSe);
     return res.sendStatus(201);
     
 }

@@ -19,10 +19,14 @@ import axios from "axios";
 export const getDetectionsController = asyncHandler(
   async (req: Request, res: Response) => {
     const data = await getDetectionValidation.parseAsync(req.params);
+    console.log(req.user);
+    const {roleName} = req.user!;
+    const organizationId = roleName === "superadmin" ? undefined : req.user!.organizationId;
+    const organizationIdToUse = roleName !== "superadmin" ? undefined : organizationId;
     const detections = await allDetectionsService(
+      organizationIdToUse,
       data.spiciesId,
       data.cameraId,
-      data.date,
     );
     res.status(200).json(detections);
   },
